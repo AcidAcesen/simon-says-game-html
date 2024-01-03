@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simon Says Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px;
+        }
+        .button {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            font-size: 1.5em;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simon Says Game</h1>
+    <div class="button-container">
+        <button class="button" id="green"></button>
+        <button class="button" id="red"></button>
+        <button class="button" id="yellow"></button>
+        <button class="button" id="blue"></button>
+    </div>
+    <button onclick="startGame()">Start Game</button>
+    
+    <script>
+        const buttons = document.querySelectorAll('.button');
+        const startButton = document.querySelector('button');
+        let sequence = [];
+        let playerInput = [];
+        let gameActive = false;
+
+        function startGame() {
+            if (!gameActive) {
+                sequence = [];
+                playerInput = [];
+                gameActive = true;
+                nextTurn();
+            }
+        }
+
+        function nextTurn() {
+            playerInput = [];
+            addToSequence();
+            playSequence();
+        }
+
+        function addToSequence() {
+            const randomButton = buttons[Math.floor(Math.random() * buttons.length)];
+            sequence.push(randomButton.id);
+        }
+
+        function playSequence() {
+            let i = 0;
+            const interval = setInterval(() => {
+                highlightButton(sequence[i]);
+                i++;
+                if (i >= sequence.length) {
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
+
+        function highlightButton(id) {
+            const button = document.getElementById(id);
+            button.style.backgroundColor = id;
+            setTimeout(() => {
+                button.style.backgroundColor = '';
+            }, 500);
+        }
+
+        function checkInput() {
+            if (gameActive) {
+                const clickedButton = this.id;
+                highlightButton(clickedButton);
+                playerInput.push(clickedButton);
+                if (playerInput.join('') === sequence.join('')) {
+                    setTimeout(nextTurn, 1000);
+                } else if (!sequence.join('').startsWith(playerInput.join(''))) {
+                    gameActive = false;
+                    alert('Wrong sequence! Game over.');
+                }
+            }
+        }
+
+        buttons.forEach(button => {
+            button.addEventListener('click', checkInput);
+        });
+    </script>
+</body>
+</html>
